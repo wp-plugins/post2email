@@ -4,7 +4,7 @@
 Plugin Name: Post2Email
 Plugin URI: http://halfelf.org/plugins/post2email
 Description: Allows admin to set an email address to which all new posts are sent a copy.
-Version: 1.0
+Version: 1.1
 Author: Mika A. Epstein
 Author URI: http://halfelf.org/
 
@@ -29,6 +29,11 @@ Author URI: http://halfelf.org/
 
 */
 
+// Languages!
+function ippy_post2email_init() {
+    load_plugin_textdomain( 'ippy-post2email', false, dirname( plugin_basename( __FILE__ ) ) . '/i18n/' ); 
+}
+add_action('plugins_loaded', 'ippy_post2email_init');
 
 // Send an email when a post is published, but ONLY if it's New
 add_action('transition_post_status', 'ippy_post2email_send', 10, 3);
@@ -57,7 +62,7 @@ function ippy_post2email_send( $new_status, $old_status, $post_id ) {
 	$headers = "From: ".$options['namefrom']." <".$options['emailfrom'].">" . "\r\n";
     $to = $options['emailto'];
     $subject = get_the_title($post_id);
-    $message .= "\r\n\r\nRead more at ".get_permalink($post_id);
+    $message .= "\r\n\r\n".$options['readmore']." ".get_permalink($post_id);
     wp_mail($to, $subject, $message, $headers );
 }
 
@@ -82,39 +87,34 @@ function ippy_post2email_admin_init(){
 	);
 }
 
-register_activation_hook( __FILE__, 'ippy_post2email_activate' );
-
-function ippy_post2email_activate() {
-
-    // Set the default FROM email to wordpress@example.com
-    $sitename = strtolower( $_SERVER['SERVER_NAME'] );
-    if ( substr( $sitename, 0, 4 ) == 'www.' ) {$sitename = substr( $sitename, 4 );}
-    $from_email = 'wordpress@' . $sitename;
-
-    $options = get_option( 'ippy_post2email_options' );
-    $options['emailto'] = get_option('admin_email');       // default mail-to is the site admin
-    $options['emailfrom'] = $from_email;                   // Default from is default from (unused right now)
-    $options['namefrom'] = get_option('blogname');         // Default name from is site name.
-    add_option('ippy_post2email_options', $options);
-}
-
 // Display and fill the form field
 function ippy_post2email_setting_input() {
 
     if (!current_user_can('delete_users'))
         $return;
 
-	// get option value from the database
-	$options = get_option( 'ippy_post2email_options' );
-	$valueemailto = $options['emailto'];
-	$valueemailfrom = $options['emailfrom'];
-	$valuenamefrom = $options['namefrom'];
-		
+    // Set the default FROM email to wordpress@example.com
+    $sitename = strtolower( $_SERVER['SERVER_NAME'] );
+    if ( substr( $sitename, 0, 4 ) == 'www.' ) {$sitename = substr( $sitename, 4 );}
+    $from_email = 'wordpress@' . $sitename;
+
+    // Setting plugin defaults here:
+    $defaults = array(
+        'emailto'  => get_option('admin_email'),
+        'emailfrom' => $from_email,
+        'namefrom' => get_option('blogname'),
+        'readmore' => 'Read more:',
+    );
+
+	// get option value from the database with defaults, if not already set!
+	$options = wp_parse_args(get_option( 'ippy_post2email_options'), $defaults );
+
 	// echo the field
 	?>
-	<p><input id='emailto' name='ippy_post2email_options[emailto]' type='text' value='<?php echo esc_attr( $valueemailto ); ?>' /> Address to get a mail when a new post is published (defaults to site admin)</p>
-	<p><input id='emailfrom' name='ippy_post2email_options[emailfrom]' type='text' value='<?php echo esc_attr( $valueemailfrom ); ?>'> Address to send email from (defaults to wordpress@example.com)</p>
-	<p><input id='namefrom' name='ippy_post2email_options[namefrom]' type='text' value='<?php echo esc_attr( $valuenamefrom ); ?>'> 'Name' from which emails are sent (defaults to blogname)</p>
+	<p><input id='emailto' name='ippy_post2email_options[emailto]' type='text' value='<?php echo esc_attr( $options['emailto'] ); ?>' /> <?php printf( __( 'Address to get a mail when a new post is published (defaults to %1$s)', 'ippy-post2email' ), get_option('admin_email') ); ?></p>
+	<p><input id='emailfrom' name='ippy_post2email_options[emailfrom]' type='text' value='<?php echo esc_attr( $options['emailfrom'] ); ?>'> <?php printf( __( 'Address to send email from (defaults to %1$s)', 'ippy-post2email' ), $from_email ); ?></p>
+	<p><input id='namefrom' name='ippy_post2email_options[namefrom]' type='text' value='<?php echo esc_attr( $options['namefrom'] ); ?>'> <?php printf( __( 'Name from which emails are sent (defaults to "%1$s")', 'ippy-post2email' ), get_option('blogname') ); ?></p>
+	<p><input id='readmore' name='ippy_post2email_options[readmore]' type='text' value='<?php echo esc_attr( $options['readmore'] ); ?>'> <?php _e('Text that prefixes to your URL (defaults to "Read more")', 'ippy-post2email'); ?></p>
 	<?php
 }
 
@@ -122,10 +122,13 @@ function ippy_post2email_setting_input() {
 function ippy_post2email_validate_options( $input ) {
 	$valid = array();
 	$valid['emailto'] = sanitize_email( $input['emailto'] );
-	$valid['emailfrom'] = sanitize_email(  $input['emailfrom'] );
-	$valid['namefrom'] = $input['namefrom'];
+	$valid['emailfrom'] = sanitize_email( $input['emailfrom'] );
+	$valid['namefrom'] = sanitize_text_field($input['namefrom']);
+	$valid['readmore'] = sanitize_text_field($input['readmore']);
 
     // Something dirty entered? Warn user.
+    
+    // Checking email TO
     if( $valid['emailto'] != $input['emailto'] ) {
         add_settings_error(
             'ippy_post2email_email',       // setting title
@@ -135,6 +138,7 @@ function ippy_post2email_validate_options( $input ) {
         );        
     }
 
+    // Checking email FROM
     if( $valid['emailfrom'] != $input['emailfrom'] ) {
         add_settings_error(
             'ippy_post2email_email',       // setting title
