@@ -60,6 +60,11 @@ This is by design. I thought about adding it, but Jetpack doesn't and I've come 
 
 == Changelog ==
 
+= Version 1.2 =
+* XX by Ipstenu
+* Better handling of content 
+* Poppin' tags (strip_tags() really)
+
 = Version 1.1 = 
 * 10 May 2013 by Ipstenu
 * Data sanitization

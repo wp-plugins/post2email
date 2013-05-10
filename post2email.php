@@ -4,7 +4,7 @@
 Plugin Name: Post2Email
 Plugin URI: http://halfelf.org/plugins/post2email
 Description: Allows admin to set an email address to which all new posts are sent a copy.
-Version: 1.1
+Version: 1.2
 Author: Mika A. Epstein
 Author URI: http://halfelf.org/
 
@@ -29,11 +29,22 @@ Author URI: http://halfelf.org/
 
 */
 
-// Languages!
-function ippy_post2email_init() {
-    load_plugin_textdomain( 'ippy-post2email', false, dirname( plugin_basename( __FILE__ ) ) . '/i18n/' ); 
-}
-add_action('plugins_loaded', 'ippy_post2email_init');
+// Default Settings
+
+// Set the default FROM email to wordpress@example.com
+global $ippy_post2email_sitename;
+    $ippy_post2email_sitename = strtolower( $_SERVER['SERVER_NAME'] );
+    if ( substr( $ippy_post2email_sitename, 0, 4 ) == 'www.' ) {$ippy_post2email_sitename = substr( $ippy_post2email_sitename, 4 );}
+    $ippy_post2email_from_email = 'wordpress@' . $ippy_post2email_sitename;
+
+// Setting plugin defaults here:
+global $ippy_post2email_defaults;
+    $ippy_post2email_defaults = array(
+        'emailto'  => get_option('admin_email'),
+        'emailfrom' => $ippy_post2email_from_email,
+        'namefrom' => get_option('blogname'),
+        'readmore' => 'Read more:',
+    );
 
 // Send an email when a post is published, but ONLY if it's New
 add_action('transition_post_status', 'ippy_post2email_send', 10, 3);
@@ -49,15 +60,16 @@ function ippy_post2email_send( $new_status, $old_status, $post_id ) {
         
     if ( get_option('rss_use_excerpt') ) :
     	if ( $page_data->post_excerpt != '' ) :
-    		$message = $page_data->post_excerpt;
+    		$message = strip_tags($page_data->post_excerpt);
     	else :
-    		$message = wp_trim_words( $page_data->post_content, $num_words = 55, $more = '[...]' );
+    		$message = wp_trim_words( strip_tags($page_data->post_content), $num_words = 55, $more = '[...]' );
     	endif;
     else :
-    	$message = $page_data->post_content;
+    	$message = strip_tags($page_data->post_content);
     endif; 
 
-    $options = get_option( 'ippy_post2email_options' );
+    global $ippy_post2email_defaults;
+    $options = wp_parse_args(get_option( 'ippy_post2email_options'), $ippy_post2email_defaults );
 
 	$headers = "From: ".$options['namefrom']." <".$options['emailfrom'].">" . "\r\n";
     $to = $options['emailto'];
@@ -93,27 +105,16 @@ function ippy_post2email_setting_input() {
     if (!current_user_can('delete_users'))
         $return;
 
-    // Set the default FROM email to wordpress@example.com
-    $sitename = strtolower( $_SERVER['SERVER_NAME'] );
-    if ( substr( $sitename, 0, 4 ) == 'www.' ) {$sitename = substr( $sitename, 4 );}
-    $from_email = 'wordpress@' . $sitename;
-
-    // Setting plugin defaults here:
-    $defaults = array(
-        'emailto'  => get_option('admin_email'),
-        'emailfrom' => $from_email,
-        'namefrom' => get_option('blogname'),
-        'readmore' => 'Read more:',
-    );
-
 	// get option value from the database with defaults, if not already set!
-	$options = wp_parse_args(get_option( 'ippy_post2email_options'), $defaults );
+	global $ippy_post2email_sitename;
+	global $ippy_post2email_defaults;
+	$options = wp_parse_args(get_option( 'ippy_post2email_options'), $ippy_post2email_defaults );
 
 	// echo the field
 	?>
-	<p><input id='emailto' name='ippy_post2email_options[emailto]' type='text' value='<?php echo esc_attr( $options['emailto'] ); ?>' /> <?php printf( __( 'Address to get a mail when a new post is published (defaults to %1$s)', 'ippy-post2email' ), get_option('admin_email') ); ?></p>
-	<p><input id='emailfrom' name='ippy_post2email_options[emailfrom]' type='text' value='<?php echo esc_attr( $options['emailfrom'] ); ?>'> <?php printf( __( 'Address to send email from (defaults to %1$s)', 'ippy-post2email' ), $from_email ); ?></p>
-	<p><input id='namefrom' name='ippy_post2email_options[namefrom]' type='text' value='<?php echo esc_attr( $options['namefrom'] ); ?>'> <?php printf( __( 'Name from which emails are sent (defaults to "%1$s")', 'ippy-post2email' ), get_option('blogname') ); ?></p>
+	<p><a name="post2email" value="post2email"></a><input id='emailto' name='ippy_post2email_options[emailto]' type='text' value='<?php echo esc_attr( $options['emailto'] ); ?>' /> <?php printf( __( 'Address to get a mail when a new post is published (defaults to %1$s)', 'ippy-post2email' ), get_option('admin_email') ); ?></p>
+	<p><input id='emailfrom' name='ippy_post2email_options[emailfrom]' type='text' value='<?php echo esc_attr( $options['emailfrom'] ); ?>'> <?php printf( __( 'Address to send email from (defaults to %1$s)', 'ippy-post2email' ), $ippy_post2email_sitename ); ?></p>
+	<p><input id='namefrom' name='ippy_post2email_options[namefrom]' type='text' value='<?php echo esc_attr( $options['namefrom'] ); ?>'> <?php printf( __( 'Name from which emails are sent (defaults to "wordpress@%1$s")', 'ippy-post2email' ), get_option('blogname') ); ?></p>
 	<p><input id='readmore' name='ippy_post2email_options[readmore]' type='text' value='<?php echo esc_attr( $options['readmore'] ); ?>'> <?php _e('Text that prefixes to your URL (defaults to "Read more")', 'ippy-post2email'); ?></p>
 	<?php
 }
@@ -147,7 +148,7 @@ function ippy_post2email_validate_options( $input ) {
             'error'                        // type of message
         );        
     }
-
+    
 	return $valid;
 }
 
@@ -157,8 +158,18 @@ add_filter('plugin_row_meta', 'ippy_post2email_donate_link', 10, 2);
 
 function ippy_post2email_donate_link($links, $file) {
 	if ($file == plugin_basename(__FILE__)) {
-		$donate_link = '<a href="https://www.wepay.com/donations/halfelf-wp">Donate</a>';
+		$donate_link = '<a href="https://www.wepay.com/donations/halfelf-wp">' . __( 'Donate', 'ippy-post2email' ) . '</a>';
 		$links[] = $donate_link;
     }
     return $links;
+}
+
+// add settings to manage plugin page
+add_filter( 'plugin_action_links', 'ippy_post2email_add_settings_link', 10, 2 );
+function ippy_post2email_add_settings_link( $links, $file ) {
+	if ( plugin_basename( __FILE__ ) == $file ) {
+		$settings_link = '<a href="' . admin_url( 'options-reading.php' ) . '#post2email">' . __( 'Settings', 'ippy-post2email' ) . '</a>';
+		array_unshift( $links, $settings_link );
+	}
+	return $links;
 }
