@@ -4,7 +4,7 @@ Donate link: https://www.wepay.com/donations/halfelf-wp
 Tags: email, post, notification
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,17 +31,14 @@ Configuration Options are on Settings -> Reading
 
 = Why only one email? =
 
-To limit your ability to spam. By restricting you to one address, you won't be able to just send emails to the whole world without them agreeing to it first.
-
-If you need to send to multiple people, you want something like Subscribe2 or MailChimp (or Notifly).
+To limit your ability to spam. By restricting you to one address, you won't be able to just send emails to the whole world without them agreeing to it first. If you really need to send to multiple people, you want something like [Subscribe2](http://wordpress.org/extend/plugins/subscribe2/) or [Notifly](http://wordpress.org/extend/plugins/notifly). 
 
 = What can I customize? =
 
 The 'to' email address (defaults to your admin)
-
 The 'from' email address (defaults to wordpress@yourdomain.com)
-
 The 'from' name (defaults to your blog's name)
+The 'Read more:' content (defaults to 'Read more:')
 
 = How do I make the email send out post excerpts? =
 
@@ -64,7 +61,7 @@ This is by design. I thought about adding it, but Jetpack doesn't and I've come 
 == Changelog ==
 
 = Version 1.1 = 
-* XX by Ipstenu
+* 10 May 2013 by Ipstenu
 * Data sanitization
 * Adding in ability to customize 'Read More' prefix.
 * Better handling of plugin defaults
