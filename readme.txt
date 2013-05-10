@@ -39,7 +39,7 @@ If you need to send to multiple people, you want something like Subscribe2 or Ma
 
 The 'to' email address (defaults to your admin)
 
-The 'from' email address (defaults to wordpress@example.com)
+The 'from' email address (defaults to wordpress@yourdomain.com)
 
 The 'from' name (defaults to your blog's name)
 
@@ -62,6 +62,12 @@ This is by design. I thought about adding it, but Jetpack doesn't and I've come 
 1. Settings
 
 == Changelog ==
+
+= Version 1.1 = 
+* XX by Ipstenu
+* Data sanitization
+* Adding in ability to customize 'Read More' prefix.
+* Better handling of plugin defaults
 
 = Verision 1.0 =
 * 9 May 2013 by Ipstenu
