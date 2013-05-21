@@ -1,10 +1,10 @@
-=== Post2Email ===
+=== post2email ===
 Contributors: Ipstenu
 Donate link: https://www.wepay.com/donations/halfelf-wp
 Tags: email, post, notification
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,6 @@ Born from the ideas of rss2email, instead of relying wholly on RSS and a cron jo
 
 What I'm contemplating adding:
 * Ability to say "no, not this post"
-* Customize email message
 * Allow options for different post types to get emailed
 
 == Installation ==
@@ -32,6 +31,8 @@ Configuration Options are on Settings -> Reading
 = Why only one email? =
 
 To limit your ability to spam. By restricting you to one address, you won't be able to just send emails to the whole world without them agreeing to it first. If you really need to send to multiple people, you want something like [Subscribe2](http://wordpress.org/extend/plugins/subscribe2/) or [Notifly](http://wordpress.org/extend/plugins/notifly). 
+
+Better yet, use the right tool for the job: A mailing list. And then you can have this plugin email the mailing list. That's what I do.
 
 = What can I customize? =
 
@@ -61,9 +62,12 @@ This is by design. I thought about adding it, but Jetpack doesn't and I've come 
 == Changelog ==
 
 = Version 1.2 =
-* XX by Ipstenu
-* Better handling of content 
+* 21 May 2013 by Ipstenu
+* Better handling of content
 * Poppin' tags (strip_tags() really)
+* De-texturizing email titles
+* Serialization
+* Translate all the things!
 
 = Version 1.1 = 
 * 10 May 2013 by Ipstenu
