@@ -3,7 +3,7 @@ Contributors: Ipstenu
 Donate link: https://www.wepay.com/donations/halfelf-wp
 Tags: email, post, notification
 Requires at least: 3.3
-Tested up to: 3.7
+Tested up to: 3.8
 Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,6 +17,7 @@ Ever have a day where you want all new posts to result in an email sent to a spe
 Born from the ideas of rss2email, instead of relying wholly on RSS and a cron job to trigger email, Post2Email instead hooks into WP to send emails from WordPress itself. Instead of reinventing the wheel, the plugin checks what you set for RSS (show full text or excerpt) to decide what to use for message content.
 
 What I'm contemplating adding:
+
 * Ability to say "no, not this post"
 * Allow options for different post types to get emailed
 
