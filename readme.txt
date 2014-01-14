@@ -1,6 +1,6 @@
 === Post2Email ===
 Contributors: Ipstenu
-Donate link: https://www.wepay.com/donations/halfelf-wp
+Donate link: https://store.halfelf.org/donate/
 Tags: email, post, notification
 Requires at least: 3.3
 Tested up to: 3.6
