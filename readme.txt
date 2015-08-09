@@ -3,7 +3,7 @@ Contributors: Ipstenu
 Donate link: https://store.halfelf.org/donate/
 Tags: email, post, notification
 Requires at least: 3.3
-Tested up to: 4.2
+Tested up to: 4.3
 Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -31,7 +31,7 @@ Configuration Options are on Settings -> Reading
 
 = Why only one email? =
 
-To limit your ability to spam. By restricting you to one address, you won't be able to just send emails to the whole world without them agreeing to it first. If you really need to send to multiple people, you want something like [Subscribe2](http://wordpress.org/extend/plugins/subscribe2/) or [Notifly](http://wordpress.org/extend/plugins/notifly). 
+To limit your ability to spam. By restricting you to one address, you won't be able to just send emails to the whole world without them agreeing to it first. If you really need to send to multiple people, you want something like [Subscribe2](http://wordpress.org/extend/plugins/subscribe2/) or [Notifly](http://wordpress.org/extend/plugins/notifly).
 
 Better yet, use the right tool for the job: A mailing list. And then you can have this plugin email the mailing list. That's what I do.
 
@@ -70,7 +70,7 @@ This is by design. I thought about adding it, but Jetpack doesn't and I've come 
 * Serialization
 * Translate all the things!
 
-= Version 1.1 = 
+= Version 1.1 =
 * 10 May 2013 by Ipstenu
 * Data sanitization
 * Adding in ability to customize 'Read More' prefix.
